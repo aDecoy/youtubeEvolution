@@ -8,9 +8,13 @@ ant_input, ant_output = 8, 1
 
 
 class Perceptron():
-    def __init__(self, weights, biases):
-        weights = numpy.array([1, 1, 1, 1, 1, 1, 1, 1] )
-        biases = numpy.array([0, 0, 0, 0, 0, 0, 0, 0] )
+    def __init__(self, genome = {"weights": [1, 1, 1, 1, 1, 1, 1, 1], "biases" : [0, 0, 0, 0, 0, 0, 0, 0]} ):
+
+        weights = genome["weights"]
+        biases = genome["weights"]
+
+        weights = numpy.array(weights )
+        biases = numpy.array(biases )
         self.weights = weights
         self.biases = biases
 
@@ -24,33 +28,26 @@ class Perceptron():
             return 1
         elif output_signal < 3:
             return 2
-        elif output_signal < 4:
+        else :
             return 3
-        else:
-            return 4
+
 
 
 if __name__ == '__main__':
     env = gym.make('LunarLander-v2')
     # neuralNetwork = NerualNetworkModel(24,4)
     total_score = 0
-
     ant_simulations = 10
+    simulation_max_timesteps = 250
+    perceptron = Perceptron()
 
-    perceptron = Perceptron(0, 0)
     for i_episode in range(ant_simulations):
         observation = env.reset()
-        for t in range(250):
-            env.render()
-            print(observation)
-            print(len(observation))
-            # action = env.action_space.sample()
-            # for i in range(4):
-            #     max_outputs[i] = max(max_outputs[i],action[i])
-            #     min_outputs[i] = min(min_outputs[i],action[i])
-            # print(action)
+        for t in range(simulation_max_timesteps):
+            # env.render()
+            # print(observation)
             action = perceptron.run(observation)
-            print(action)
+            # print(action)
             observation, reward, done, info = env.step(action)
             if done:
                 print("Episode finished after {} timesteps".format(t + 1))

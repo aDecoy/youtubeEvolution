@@ -8,9 +8,9 @@ ant_input, ant_output = 8, 1
 
 
 class Perceptron():
-    def __init__(self, weights, biases):
-        weights = numpy.array([1, 1, 1, 1, 1, 1, 1, 1] )
-        biases = numpy.array([0, 0, 0, 0, 0, 0, 0, 0] )
+    def __init__(self, weights=[1, 1, 1, 1, 1, 1, 1, 1], biases=[0, 0, 0, 0, 0, 0, 0, 0] ):
+        weights = numpy.array(weights )
+        biases = numpy.array(biases )
         self.weights = weights
         self.biases = biases
 

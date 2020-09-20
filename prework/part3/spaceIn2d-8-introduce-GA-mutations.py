@@ -71,19 +71,17 @@ def replenish_population_with_random_genomes(pop_size, population):
 
 
 def mutate(individual):
-    mutation_rate = 0.05
-    mutate_power = 0.1
+    mutation_rate = 0.15
+    mutate_power = 0.4
     genome = individual['genome']
     for chromosome in genome:
         new_genes = []
         for old_gene_value in genome[chromosome]:
             if random.random() < mutation_rate:
                 # Either increase or decrease the value . Alternativly just random
-                new_genes.append(random.uniform(genome_value_min, genome_value_max))
-                # if random.random()<0.5:
-                #     new_genes.append(old_gene_value+mutate_power)
-                # else:
-                #     new_genes.append(old_gene_value-mutate_power)
+                # new_genes.append(random.uniform(genome_value_min, genome_value_max))
+                new_genes.append(old_gene_value+ random.uniform( -mutate_power,mutate_power))
+
             else:
                 # No change in the value
                 new_genes.append(old_gene_value)
@@ -96,6 +94,7 @@ def mutate(individual):
 def evaluate(individual_genome):
     total_score = 0
     perceptron = Perceptron(individual["genome"])
+    # perceptron = Perceptron(a["genome"])
     simulation_scores = []
     for i_episode in range(ant_simulations):
         observation = env.reset()
@@ -106,7 +105,8 @@ def evaluate(individual_genome):
             action = perceptron.run(observation)
             observation, reward, done, info = env.step(action)
             reward_in_current_simulation += reward
-            if done:
+            # print(reward)
+            if done or t == simulation_max_timesteps-1:
                 # print("Episode finished after {} timesteps. Reward: {}".format(t + 1, reward_in_current_simulation))
                 simulation_scores.append(reward_in_current_simulation)
                 break
@@ -149,12 +149,14 @@ def evaluate(individual_genome):
 # Best fitness achived was : 15.841208863405885
 # Best individual was : {'id': 4624, 'genome': {'weights': [0.0762351887199717, -0.07954399145330426, -0.9923665515655753, 0.37445495060686707, 0.7249657205728088, 0.9589173719427644, -0.7172755926846484, -0.42222519370978917], 'biases': [-0.6877587760515107, 0.7998630364793076, 0.3349204632814373, 0.8614082050943472, 0.3310104313479525, 0.31334060900556127, 0.8415308789975724, -0.5521768506083535]}, 'fitness': 15.841208863405885}
 # --------------------------------------------------
+# a = {'id': 4624, 'genome': {'weights': [0.0762351887199717, -0.07954399145330426, -0.9923665515655753, 0.37445495060686707, 0.7249657205728088, 0.9589173719427644, -0.7172755926846484, -0.42222519370978917], 'biases': [-0.6877587760515107, 0.7998630364793076, 0.3349204632814373, 0.8614082050943472, 0.3310104313479525, 0.31334060900556127, 0.8415308789975724, -0.5521768506083535]}}
+# a = {'id': 2392, 'genome': {'weights': [0.0762351887199717, -0.02640922493914033, -0.9923665515655753, 0.37445495060686707, 0.7249657205728088, 0.9589173719427644, -0.4549523056883864, 0.5908965319097161], 'biases': [-0.6877587760515107, 0.7998630364793076, 0.3349204632814373, 0.8614082050943472, 0.3310104313479525, 0.31334060900556127, 0.8415308789975724, -0.5521768506083535]}, 'fitness': 0.0}
 if __name__ == '__main__':
     # Configuration
     env = gym.make('LunarLander-v2')
-    ant_simulations = 10
+    ant_simulations = 3
     simulation_max_timesteps = 250
-    pop_size = 300
+    pop_size = 200
     generations = 200
 
     ## Init population
@@ -176,16 +178,17 @@ if __name__ == '__main__':
         best = max(population, key=lambda x: x['fitness'])
         generation_best.append(best["fitness"])
         print("Best fitness achived was : {}".format(best["fitness"]))
-        print("Best individual was : {}".format(best))
+        print("Best individual in genertation {} was : {}".format(g,best))
         # print("Average fintess in generation was {}".format(mean(x['fitness'] for x in population)))
         print('--------------------------------------------------')
         if g != generations - 1:
             # Keep 5 best, kill the rest!
-            parents_percentage = 0.01
+            parents_percentage = 0.1
             ant_parents = ceil(pop_size * parents_percentage)
+            # ant_parents = 3
             parents = population[0:ant_parents]
             children = []
-            random_new_percentage = 0.1
+            random_new_percentage = 0.01
             ant_random_new = ceil(pop_size * random_new_percentage)
             ant_children = pop_size - len(parents) - ant_random_new
 
@@ -195,7 +198,6 @@ if __name__ == '__main__':
                 children.append(mutate(child))
 
             population = parents + children
-
             population = replenish_population_with_random_genomes(pop_size, population)
             assert len(population) == pop_size
         # only gives random. what about using what we know works

@@ -91,6 +91,7 @@ def mutate(individual):
     return individual
 
 def crossover(parent1,parent2):
+    assert  parent1 != parent2
     p1_genome = parent1["genome"]
     p2_genome = parent2["genome"]
     child = {"id": next(global_individ_id_counter), "genome":{}}

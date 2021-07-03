@@ -6,13 +6,143 @@ from itertools import count
 from copy import deepcopy
 from collections import Counter
 import time
-global_individ_id_counter = count()
+from dataclasses import dataclass
 
+global_individ_id_counter = count()
+global_bias_id_counter = count()
+global_weight_id_counter = count()
+
+@dataclass
+class Genome:
+    layer_chromosme : dict = None
+    neruon_chromosme : dict = None
+    weight_chromosome: dict = None
+    bias_chromosome: dict = None
+
+@dataclass
+class Gene:
+    innovationNumber: int = None
+
+@dataclass
+class BiasGene:
+    value : float
+    innovationNumber: int
+    parent_neruon : int
+
+@dataclass
+class WeightGene:
+    value : float
+    innovationNumber: int
+    transmitting_neruon : int
+    receiving_neruon : int
+
+@dataclass
+class NeruonGene:
+    innovationNumber: int
+    parent_layer : int
+
+@dataclass
+class LayerGene:
+    innovationNumber: int
+
+
+@dataclass
+class Phenotype:
+    weights :dict
+    biases : dict
 
 class NeuralNetworkModel:
+
+    # def __init__(self, phenotype : Phenotype):
     def __init__(self, genome={"weights": [2, 0.9, 1.2, 1.1, 1, 1, 1, 1], "biases": [0, 0, 0, 0, 0, 0, 0, 0, ]}):
         self.weights = numpy.array(genome["weights"])
         self.biases = numpy.array(genome["biases"])
+
+        # if genome is None:
+        #     genome = {"weights": {"0-1": [[1, 1, 1, 1, 1, 1, 1, 1],
+        #                                   [1, 1, 1, 1, 1, 1, 1, 1],
+        #                                   [1, 1, 1, 1, 1, 1, 1, 1],
+        #                                   [1, 1, 1, 1, 1, 1, 1, 1]],
+        #                           "1-2": [[1, 1, 1, 1],
+        #                                   [1, 1, 1, 1],
+        #                                   [1, 1, 1, 1],
+        #                                   [1, 1, 1, 1]]},
+        #               "biases": [[0, 0, 0, 0], [0]]}
+        # if genome is None:
+        #
+        #     genome = Genome(id=None,
+        #                     chromosomes={Chromosome(name="weights",
+        #                                             genes={
+        #                                                 "0-1": [
+        #                                                     [Gene(1), Gene(1), Gene(1), Gene(1), Gene(1), Gene(1), Gene(1), Gene(1)],
+        #                                                     [Gene(1), Gene(1), Gene(1), Gene(1), Gene(1), Gene(1), Gene(1), Gene(1)],
+        #                                                     [Gene(1), Gene(1), Gene(1), Gene(1), Gene(1), Gene(1), Gene(1), Gene(1)],
+        #                                                     [Gene(1), Gene(1), Gene(1), Gene(1), Gene(1), Gene(1), Gene(1), Gene(1)]],
+        #                                                 "1-2": [[Gene(1), Gene(1), Gene(1), Gene(1)],
+        #                                                         [Gene(1), Gene(1), Gene(1), Gene(1)],
+        #                                                         [Gene(1), Gene(1), Gene(1), Gene(1)],
+        #                                                         [Gene(1), Gene(1), Gene(1), Gene(1)]]
+        #                                             }),
+        #                                  Chromosome(name="biases",
+        #                                             genes={"1": [Gene(0), Gene(0), Gene(0), Gene(0)], "2": [Gene(0)]})
+        #                                  }
+        #                     )
+
+    if genome is None:
+
+        genome = Genome(id=None,
+                                layer_chromosome = {0:LayerGene(level=0 ),1:LayerGene(level=1 ),2:LayerGene(level=2 )}
+                                neuron_chromosome = {0: NeuronGene(innovationNumber=0, parent_layer=0),
+                                                     1: NeuronGene(innovationNumber=1, parent_layer=0),
+                                                     2: NeuronGene(innovationNumber=2, parent_layer=0),
+                                                     3: NeuronGene(innovationNumber=3, parent_layer=0),
+                                                     4: NeuronGene(innovationNumber=4, parent_layer=0),
+                                                     5: NeuronGene(innovationNumber=5, parent_layer=0),
+                                                     6: NeuronGene(innovationNumber=6, parent_layer=0),
+                                                     7: NeuronGene(innovationNumber=7, parent_layer=0),
+
+                                                     8: NeuronGene(innovationNumber=8, parent_layer=1),
+                                                     9: NeuronGene(innovationNumber=9, parent_layer=1),
+                                                     10: NeuronGene(innovationNumber=10, parent_layer=1),
+                                                     11: NeuronGene(innovationNumber=11, parent_layer=1),
+
+                                                     12: NeuronGene(innovationNumber=12, parent_layer=2)
+                                                     },
+                                bias_chromosome = {0: BiasGene(parent_neuron=0, value=0),
+                                                     1: BiasGene(parent_neuron=1, value=0),
+                                                     2: BiasGene(parent_neuron=2, value=0),
+                                                     3: BiasGene(parent_neuron=3, value=0),
+                                                     4: BiasGene(parent_neuron=4, value=0),
+                                                     5: BiasGene(parent_neuron=5, value=0),
+                                                     6: BiasGene(parent_neuron=6, value=0),
+                                                     7: BiasGene(parent_neuron=7, value=0),
+
+                                                     8: BiasGene(parent_neuron=8, value=1),
+                                                     9: BiasGene(parent_neuron=9, value=1),
+                                                     10: BiasGene(parent_neuron=10, value=1),
+                                                     11: BiasGene(parent_neuron=11, value=1),
+
+                                                     12: BiasGene(parent_neuron=12, value=2)
+                                                     },
+                                chromosomes={Chromosome(name="weights",
+                                                        genes={
+                                                            "layer_0": [], # here the activation function will been
+                                                            "layer_1": [],
+                                                            "layer_2" : [],
+                                                            "0-1": [
+                                                                [Gene(1), Gene(1), Gene(1), Gene(1), Gene(1), Gene(1), Gene(1), Gene(1)],
+                                                                [Gene(1), Gene(1), Gene(1), Gene(1), Gene(1), Gene(1), Gene(1), Gene(1)],
+                                                                [Gene(1), Gene(1), Gene(1), Gene(1), Gene(1), Gene(1), Gene(1), Gene(1)],
+                                                                [Gene(1), Gene(1), Gene(1), Gene(1), Gene(1), Gene(1), Gene(1), Gene(1)]],
+                                                            "1-2": [[Gene(1), Gene(1), Gene(1), Gene(1)],
+                                                                    [Gene(1), Gene(1), Gene(1), Gene(1)],
+                                                                    [Gene(1), Gene(1), Gene(1), Gene(1)],
+                                                                    [Gene(1), Gene(1), Gene(1), Gene(1)]]
+                                                        }),
+                                             Chromosome(name="biases",
+                                                        genes={"1": [Gene(0), Gene(0), Gene(0), Gene(0)], "2": [Gene(0)]})
+                                             }
+                                )
 
     def noise_output(self):
         return random.choice(range(3))
@@ -94,7 +224,6 @@ def replenish_population_with_new_random(pop_size, population):
 
 
 def mutate(individual):
-
     genome = individual["genome"]
     for chromosome in genome:
         new_chromosome = []
@@ -163,7 +292,6 @@ if __name__ == '__main__':
     mutation_power = 0.4
     crossover_mix_genes_rate = 0.1
     parent_selection_weighted_choises = False
-
 
     ## Init population
     population = initialize_populatin(pop_size)

@@ -161,15 +161,15 @@ class NeuralNetworkModel:
 def evaluate(individual):
     total_score = []
     # perceptron = NeuralNetworkModel(individual["genome"])
-    phenotype = develop_genome_to_neural_network_phenotype(individual["genome"])  # todo mix these ? change function  name?
-    # phenotype = develop_genome_to_neural_network_phenotype(geneB["genome"])
+    # phenotype = develop_genome_to_neural_network_phenotype(individual["genome"])  # todo mix these ? change function  name?
+    phenotype = develop_genome_to_neural_network_phenotype(geneB["genome"])
     nerualNetwork = NeuralNetworkModel(phenotype)
     # perceptron = NeuralNetworkModel(gene["genome"])
     for i_episode in range(ant_simulations):
         observation = env.reset()
         score_in_current_simulation = 0
         for t in range(simulation_max_steps):
-            # env.render()
+            env.render()
             # print(observation)
             # action = env.action_space.sample()
             # print(action)
@@ -179,7 +179,7 @@ def evaluate(individual):
             observation, reward, done, info = env.step(action)
             score_in_current_simulation += reward
             if done:
-                # print("Episode finished after {} timesteps, score {}".format(t + 1, score_in_current_simulation ))
+                print("Episode finished after {} timesteps, score {}".format(t + 1, score_in_current_simulation ))
                 total_score.append(score_in_current_simulation)
                 break
 
